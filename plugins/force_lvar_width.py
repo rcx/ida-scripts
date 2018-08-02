@@ -97,15 +97,32 @@ class hexrays_callback_info(object):
 
         return 0
 
-if idaapi.init_hexrays_plugin():
-    i = hexrays_callback_info()
-    idaapi.register_action(
-        idaapi.action_desc_t(
-            force_width_actname,
-            "Force lvar width",
-            force_width_action_handler_t(i),
-            "Shift-W"))
-    idaapi.install_hexrays_callback(i.event_callback)
-else:
-    print 'Force lvar width: hexrays is not available.'
+class ForceLvarWidth(idaapi.plugin_t):
+    flags = idaapi.PLUGIN_PROC | idaapi.PLUGIN_HIDE
+    wanted_hotkey = "Shift-W"
+    comment = "Force lvar width plugin for Hex-Rays decompiler"
+    help = "There is no one to help you now"
+    wanted_name = "Hex-Rays lvar width forcer"
 
+    def init(self):
+        if idaapi.init_hexrays_plugin():
+            i = hexrays_callback_info()
+            idaapi.register_action(
+                idaapi.action_desc_t(
+                    force_width_actname,
+                    "Force lvar width",
+                    force_width_action_handler_t(i),
+                    "Shift-W"))
+            idaapi.install_hexrays_callback(i.event_callback)
+            print 'Hex-Rays lvar width forcer by ecx86 loaded!'
+        else:
+            print 'Force lvar width: Hexrays is not available.'
+
+    def term(self):
+        pass
+
+    def run(self, arg):
+        pass
+
+def PLUGIN_ENTRY():
+    return ForceLvarWidth()
